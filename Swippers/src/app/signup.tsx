@@ -6,17 +6,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { registerUser } from '@/lib/auth';
 
 export default function SignUpScreen() {
   const theme = useTheme();
-  const [name, setName] = useState('');
+  const [fornavn, setFornavn] = useState('');
+  const [efternavn, setEfternavn] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit() {
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+  async function handleSubmit() {
+    if (!fornavn.trim() || !efternavn.trim() || !username.trim() || !email.trim() || !password || !confirmPassword) {
       setError('Please fill in all fields.');
       return;
     }
@@ -32,8 +36,30 @@ export default function SignUpScreen() {
       setError('Passwords do not match.');
       return;
     }
+
     setError('');
-    router.replace('/');
+    setIsSubmitting(true);
+    try {
+      await registerUser({
+        email: email.trim(),
+        password,
+        username: username.trim(),
+        fornavn: fornavn.trim(),
+        efternavn: efternavn.trim(),
+      });
+      // No user_config row exists yet, so send them into onboarding
+      // rather than the main app.
+      router.replace('/onboarding');
+    } catch (err: any) {
+      // Postgres unique_violation on users.username surfaces here
+      if (err?.code === '23505') {
+        setError('That username is already taken.');
+      } else {
+        setError(err?.message ?? 'Something went wrong. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const inputStyle = [styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }];
@@ -47,18 +73,50 @@ export default function SignUpScreen() {
               Create account
             </ThemedText>
 
+            <View style={styles.row}>
+              <View style={[styles.field, styles.flex]}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  First name
+                </ThemedText>
+                <TextInput
+                  style={inputStyle}
+                  placeholder="Jane"
+                  placeholderTextColor={theme.textSecondary}
+                  autoCapitalize="words"
+                  autoComplete="given-name"
+                  value={fornavn}
+                  onChangeText={setFornavn}
+                />
+              </View>
+
+              <View style={[styles.field, styles.flex]}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  Last name
+                </ThemedText>
+                <TextInput
+                  style={inputStyle}
+                  placeholder="Doe"
+                  placeholderTextColor={theme.textSecondary}
+                  autoCapitalize="words"
+                  autoComplete="family-name"
+                  value={efternavn}
+                  onChangeText={setEfternavn}
+                />
+              </View>
+            </View>
+
             <View style={styles.field}>
               <ThemedText type="small" themeColor="textSecondary">
-                Full name
+                Username
               </ThemedText>
               <TextInput
                 style={inputStyle}
-                placeholder="Jane Doe"
+                placeholder="janedoe"
                 placeholderTextColor={theme.textSecondary}
-                autoCapitalize="words"
-                autoComplete="name"
-                value={name}
-                onChangeText={setName}
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={username}
+                onChangeText={setUsername}
               />
             </View>
 
@@ -111,9 +169,12 @@ export default function SignUpScreen() {
             {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
 
             <Pressable
-              style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-              onPress={handleSubmit}>
-              <ThemedText style={styles.buttonText}>Create account</ThemedText>
+              style={({ pressed }) => [styles.button, (pressed || isSubmitting) && styles.buttonPressed]}
+              onPress={handleSubmit}
+              disabled={isSubmitting}>
+              <ThemedText style={styles.buttonText}>
+                {isSubmitting ? 'Creating account…' : 'Create account'}
+              </ThemedText>
             </Pressable>
 
             <Pressable style={styles.loginLink} onPress={() => router.push('/login')}>
@@ -145,6 +206,10 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: Spacing.two,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: Spacing.two,
   },
   field: {
     gap: Spacing.one,
