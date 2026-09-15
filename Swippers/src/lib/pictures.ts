@@ -93,6 +93,18 @@ export async function removePicture(pictureId: string, storagePath: string) {
   if (dbError) throw dbError;
 }
 
+export async function getProfilePicture(userId: string, pictureTypeId: number): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('pictures')
+    .select('storage_path')
+    .eq('user_id', userId)
+    .eq('picture_type_id', pictureTypeId)
+    .maybeSingle();
+  if (error) throw error;
+
+  return data?.storage_path ?? null;
+}
+
 export function getPictureUrl(storagePath: string): string {
   return supabase.storage.from('pictures').getPublicUrl(storagePath).data.publicUrl;
 }

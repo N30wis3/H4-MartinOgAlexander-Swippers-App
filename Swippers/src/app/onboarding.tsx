@@ -181,7 +181,7 @@ export default function OnboardingScreen() {
       });
       await replaceUserKampsports(user.id, Array.from(kampsportIds));
 
-      router.replace('/(tabs)');
+      router.replace('/mainPage');
     } catch (err: any) {
       setError(err?.message ?? 'Something went wrong. Please try again.');
     } finally {

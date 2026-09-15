@@ -37,7 +37,7 @@ export default function LoginScreen() {
       if (!data.user) throw new Error('Login succeeded but no user was returned.');
 
       const complete = await isProfileComplete(data.user.id);
-      router.replace(complete ? '/(tabs)' : '/onboarding');
+      router.replace(complete ? '/mainPage' : '/onboarding');
     } catch (err: any) {
       // Supabase returns this message for both wrong password and
       // unknown email, on purpose (doesn't reveal which one failed).
