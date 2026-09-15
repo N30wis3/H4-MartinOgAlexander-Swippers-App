@@ -9,6 +9,7 @@ export type Lookups = {
   vaegt: LookupOption[]; // weight brackets
   aldersgruppe: LookupOption[]; // age brackets
   kampsport: LookupOption[];
+  pictureTypes: LookupOption[];
 };
 
 function bracketLabel(min: number, max: number) {
@@ -16,15 +17,16 @@ function bracketLabel(min: number, max: number) {
 }
 
 export async function fetchLookups(): Promise<Lookups> {
-  const [genderRes, hoejdeRes, vaegtRes, aldersgruppeRes, kampsportRes] = await Promise.all([
+  const [genderRes, hoejdeRes, vaegtRes, aldersgruppeRes, kampsportRes, pictureTypesRes] = await Promise.all([
     supabase.from('gender_type').select('id, gender').order('id'),
     supabase.from('hoejde').select('id, min, max').order('id'),
     supabase.from('vaegt').select('id, min, max').order('id'),
     supabase.from('aldersgruppe').select('id, min, max').order('id'),
     supabase.from('kampsport').select('id, kampsport').order('id'),
+    supabase.from('picture_types').select('id, type').order('id'),
   ]);
 
-  for (const res of [genderRes, hoejdeRes, vaegtRes, aldersgruppeRes, kampsportRes]) {
+  for (const res of [genderRes, hoejdeRes, vaegtRes, aldersgruppeRes, kampsportRes, pictureTypesRes]) {
     if (res.error) throw res.error;
   }
 
@@ -34,5 +36,6 @@ export async function fetchLookups(): Promise<Lookups> {
     vaegt: vaegtRes.data!.map((r) => ({ id: r.id, label: bracketLabel(r.min, r.max) + ' kg' })),
     aldersgruppe: aldersgruppeRes.data!.map((r) => ({ id: r.id, label: bracketLabel(r.min, r.max) })),
     kampsport: kampsportRes.data!.map((r) => ({ id: r.id, label: r.kampsport })),
+    pictureTypes: pictureTypesRes.data!.map((r) => ({ id: r.id, label: r.type })),
   };
 }
