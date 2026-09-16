@@ -6,7 +6,7 @@ export default function mainPage() {
   return (
     <View style={styles.container}>
       <ThemedText type="title">Welcome to the Main Page</ThemedText>
-      
+      <View style={styles.profileCard}></View>
     </View>
   );
 }
@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
 
   profileCard: {
     width: '90%',
+    height: '70%',
     padding: 20,
     borderRadius: 10,
     backgroundColor: '#fff',
