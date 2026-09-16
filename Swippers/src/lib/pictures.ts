@@ -1,8 +1,9 @@
 // src/lib/pictures.ts
 import * as ImagePicker from 'expo-image-picker';
+import { decode } from 'base64-arraybuffer';
 import { supabase } from './supabase';
 
-export type PickedImage = { uri: string; mimeType: string };
+export type PickedImage = { uri: string; mimeType: string; base64: string };
 
 // Opens the camera or photo library and returns the picked image,
 // or null if the user cancelled.
@@ -19,10 +20,11 @@ export async function pickImage(source: 'camera' | 'library'): Promise<PickedIma
   }
 
   const options: ImagePicker.ImagePickerOptions = {
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ['images'],
     quality: 0.8,
     allowsEditing: true,
     aspect: [1, 1],
+    base64: true,
   };
 
   const result =
@@ -33,7 +35,10 @@ export async function pickImage(source: 'camera' | 'library'): Promise<PickedIma
   if (result.canceled || result.assets.length === 0) return null;
 
   const asset = result.assets[0];
-  return { uri: asset.uri, mimeType: asset.mimeType ?? 'image/jpeg' };
+  if (!asset.base64) {
+    throw new Error('Could not read the selected image.');
+  }
+  return { uri: asset.uri, mimeType: asset.mimeType ?? 'image/jpeg', base64: asset.base64 };
 }
 
 // Uploads a picked image to Storage and records it in public.pictures.
@@ -42,7 +47,7 @@ async function uploadPicture(userId: string, pictureTypeId: number, image: Picke
   const ext = image.mimeType.split('/')[1] ?? 'jpg';
   const path = `${userId}/${Date.now()}.${ext}`;
 
-  const arrayBuffer = await fetch(image.uri).then((res) => res.arrayBuffer());
+  const arrayBuffer = decode(image.base64);
 
   const { error: uploadError } = await supabase.storage
     .from('pictures')
