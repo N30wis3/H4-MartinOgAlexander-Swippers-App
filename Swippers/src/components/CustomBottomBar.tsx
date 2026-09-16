@@ -7,7 +7,7 @@ import { useColorScheme } from 'react-native';
 
 const TABS = [
   { name: 'Home', route: '/mainPage', icon: require('@/assets/images/tabIcons/home.png') },
-  //{ name: 'Profile', route: '/profile', icon: require('@/assets/images/tabIcons/profile.png') },
+  { name: 'Messages', route: '/messages', icon: require('@/assets/images/tabIcons/home.png') },
   // add more as needed
 ];
 
