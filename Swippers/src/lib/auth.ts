@@ -73,6 +73,24 @@ export async function upsertUserConfig({
   if (error) throw error;
 }
 
+// Overwrites the user's kampsport selections with a fresh set — safe to
+// call multiple times (e.g. if they edit their selections in onboarding
+// or later from settings), since it clears old rows before inserting.
+export async function replaceUserKampsports(userId: string, kampsportIds: number[]) {
+  const { error: deleteError } = await supabase
+    .from('users_kampsports')
+    .delete()
+    .eq('user_id', userId);
+  if (deleteError) throw deleteError;
+
+  if (kampsportIds.length === 0) return;
+
+  const { error: insertError } = await supabase
+    .from('users_kampsports')
+    .insert(kampsportIds.map((kampsport_id) => ({ user_id: userId, kampsport_id })));
+  if (insertError) throw insertError;
+}
+
 export async function isProfileComplete(userId: string): Promise<boolean> {
   const { data, error } = await supabase
     .from('user_config')

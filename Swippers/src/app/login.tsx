@@ -6,14 +6,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { isProfileComplete } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginScreen() {
   const theme = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!email.trim() || !password) {
       setError('Please fill in all fields.');
       return;
@@ -22,8 +25,26 @@ export default function LoginScreen() {
       setError('Enter a valid email address.');
       return;
     }
+
     setError('');
-    router.replace('/');
+    setIsSubmitting(true);
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signInError) throw signInError;
+      if (!data.user) throw new Error('Login succeeded but no user was returned.');
+
+      const complete = await isProfileComplete(data.user.id);
+      router.replace(complete ? '/(tabs)' : '/onboarding');
+    } catch (err: any) {
+      // Supabase returns this message for both wrong password and
+      // unknown email, on purpose (doesn't reveal which one failed).
+      setError(err?.message ?? 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const inputStyle = [styles.input, { backgroundColor: theme.backgroundElement, color: theme.text }];
@@ -71,9 +92,10 @@ export default function LoginScreen() {
             {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
 
             <Pressable
-              style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-              onPress={handleSubmit}>
-              <ThemedText style={styles.buttonText}>Log in</ThemedText>
+              style={({ pressed }) => [styles.button, (pressed || isSubmitting) && styles.buttonPressed]}
+              onPress={handleSubmit}
+              disabled={isSubmitting}>
+              <ThemedText style={styles.buttonText}>{isSubmitting ? 'Logging in…' : 'Log in'}</ThemedText>
             </Pressable>
 
             <Pressable style={styles.signupLink} onPress={() => router.push('/signup')}>
