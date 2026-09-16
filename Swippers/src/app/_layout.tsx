@@ -24,7 +24,7 @@ export default function RootLayout() {
         router.replace('/loginChoice');
       } else {
         const complete = await isProfileComplete(session.user.id);
-        router.replace(complete ? '/(tabs)' : '/onboarding');
+        router.replace(complete ? '/loginChoice' : '/onboarding');
       }
 
       setIsReady(true);
@@ -55,7 +55,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="loginChoice" />
         <Stack.Screen name="login" />
         <Stack.Screen name="signup" />
