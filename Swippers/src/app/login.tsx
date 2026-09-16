@@ -89,10 +89,14 @@ export default function LoginScreen() {
               />
             </View>
 
-            {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
+            {error ? <ThemedText style={[styles.error, { color: theme.error }]}>{error}</ThemedText> : null}
 
             <Pressable
-              style={({ pressed }) => [styles.button, (pressed || isSubmitting) && styles.buttonPressed]}
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: theme.primary },
+                (pressed || isSubmitting) && styles.buttonPressed,
+              ]}
               onPress={handleSubmit}
               disabled={isSubmitting}>
               <ThemedText style={styles.buttonText}>{isSubmitting ? 'Logging in…' : 'Log in'}</ThemedText>
@@ -141,7 +145,6 @@ const styles = StyleSheet.create({
     color: '#FF3B30',
   },
   button: {
-    backgroundColor: '#007AFF',
     paddingVertical: Spacing.three,
     borderRadius: Spacing.two,
     alignItems: 'center',

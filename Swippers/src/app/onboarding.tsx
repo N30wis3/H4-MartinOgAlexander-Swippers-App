@@ -192,7 +192,7 @@ export default function OnboardingScreen() {
   if (loadError) {
     return (
       <SafeAreaView style={styles.center}>
-        <ThemedText style={styles.error}>{loadError}</ThemedText>
+        <ThemedText style={[styles.error, { color: theme.error }]}>{loadError}</ThemedText>
       </SafeAreaView>
     );
   }
@@ -224,7 +224,7 @@ export default function OnboardingScreen() {
               onPress={() => onSelect(opt.id)}
               style={[
                 styles.chip,
-                { backgroundColor: isSelected ? '#007AFF' : theme.backgroundElement },
+                { backgroundColor: isSelected ? theme.primary : theme.backgroundElement },
               ]}>
               <ThemedText style={isSelected ? styles.chipTextSelected : undefined}>{opt.label}</ThemedText>
             </Pressable>
@@ -291,7 +291,9 @@ export default function OnboardingScreen() {
               {gallery.map((item) => (
                 <View key={item.id} style={styles.galleryItem}>
                   <Image source={{ uri: getPictureUrl(item.storage_path) }} style={styles.galleryThumb} />
-                  <Pressable style={styles.removeBadge} onPress={() => handleRemoveGalleryPicture(item)}>
+                  <Pressable
+                    style={[styles.removeBadge, { backgroundColor: theme.error }]}
+                    onPress={() => handleRemoveGalleryPicture(item)}>
                     <ThemedText style={styles.removeBadgeText}>✕</ThemedText>
                   </Pressable>
                 </View>
@@ -328,7 +330,7 @@ export default function OnboardingScreen() {
                   onPress={() => toggleKampsport(opt.id)}
                   style={[
                     styles.chip,
-                    { backgroundColor: isSelected ? '#007AFF' : theme.backgroundElement },
+                    { backgroundColor: isSelected ? theme.primary : theme.backgroundElement },
                   ]}>
                   <ThemedText style={isSelected ? styles.chipTextSelected : undefined}>{opt.label}</ThemedText>
                 </Pressable>
@@ -361,10 +363,15 @@ export default function OnboardingScreen() {
           </View>
         </Section>
 
-        {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
+        {error ? <ThemedText style={[styles.error, { color: theme.error }]}>{error}</ThemedText> : null}
 
         <Pressable
-          style={({ pressed }) => [styles.button, styles.submitButton, (pressed || isSubmitting) && styles.buttonPressed]}
+          style={({ pressed }) => [
+            styles.button,
+            styles.submitButton,
+            { backgroundColor: theme.primary },
+            (pressed || isSubmitting) && styles.buttonPressed,
+          ]}
           onPress={handleSubmit}
           disabled={isSubmitting}>
           <ThemedText style={styles.buttonText}>{isSubmitting ? 'Saving…' : 'Finish'}</ThemedText>
@@ -436,7 +443,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#FF3B30',
     borderRadius: 999,
     width: 22,
     height: 22,
@@ -462,7 +468,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   error: {
-    color: '#FF3B30',
+    // color applied inline via theme.error
   },
   button: {
     backgroundColor: '#3A3A3C',
@@ -471,7 +477,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButton: {
-    backgroundColor: '#007AFF',
     marginTop: Spacing.two,
   },
   buttonPressed: {

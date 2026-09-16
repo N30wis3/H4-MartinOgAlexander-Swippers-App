@@ -47,11 +47,8 @@ export default function SignUpScreen() {
         fornavn: fornavn.trim(),
         efternavn: efternavn.trim(),
       });
-      // No user_config row exists yet, so send them into onboarding
-      // rather than the main app.
       router.replace('/onboarding');
     } catch (err: any) {
-      // Postgres unique_violation on users.username surfaces here
       if (err?.code === '23505') {
         setError('That username is already taken.');
       } else {
@@ -166,10 +163,14 @@ export default function SignUpScreen() {
               />
             </View>
 
-            {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
+            {error ? <ThemedText style={[styles.error, { color: theme.error }]}>{error}</ThemedText> : null}
 
             <Pressable
-              style={({ pressed }) => [styles.button, (pressed || isSubmitting) && styles.buttonPressed]}
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: theme.primary },
+                (pressed || isSubmitting) && styles.buttonPressed,
+              ]}
               onPress={handleSubmit}
               disabled={isSubmitting}>
               <ThemedText style={styles.buttonText}>
@@ -221,10 +222,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   error: {
-    color: '#FF3B30',
+    // color applied inline via theme.error
   },
   button: {
-    backgroundColor: '#007AFF',
     paddingVertical: Spacing.three,
     borderRadius: Spacing.two,
     alignItems: 'center',
