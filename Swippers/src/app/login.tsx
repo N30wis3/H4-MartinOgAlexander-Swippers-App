@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { DisplayFont, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { isProfileComplete } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -54,8 +54,8 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.form}>
-            <ThemedText type="title" style={styles.title}>
-              Log in
+            <ThemedText type="title" style={[styles.title, { fontFamily: DisplayFont }]}>
+              LOG IN
             </ThemedText>
 
             <View style={styles.field}>
@@ -99,7 +99,7 @@ export default function LoginScreen() {
               ]}
               onPress={handleSubmit}
               disabled={isSubmitting}>
-              <ThemedText style={styles.buttonText}>{isSubmitting ? 'Logging in…' : 'Log in'}</ThemedText>
+              <ThemedText style={styles.buttonText}>{isSubmitting ? 'LOGGING IN…' : 'LOG IN'}</ThemedText>
             </Pressable>
 
             <Pressable style={styles.signupLink} onPress={() => router.push('/signup')}>
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.two,
+    borderRadius: Spacing.one,
     alignItems: 'center',
     marginTop: Spacing.two,
   },
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
   signupLink: {
     alignItems: 'center',

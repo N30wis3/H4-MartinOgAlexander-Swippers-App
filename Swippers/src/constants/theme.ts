@@ -14,7 +14,8 @@ export const Colors = {
     backgroundElement: '#EEEDED',
     backgroundSelected: '#E0E1E6',
     textSecondary: '#60646C',
-    primary: '#4758D6',
+    primary: '#EA3A3A',
+    secondary: '#4758D6',
     error: '#EA3A3A',
     success: '#75B363',
     warning: '#E1811F',
@@ -25,12 +26,19 @@ export const Colors = {
     backgroundElement: '#222222',
     backgroundSelected: '#2E3135',
     textSecondary: '#B0B4BA',
-    primary: '#4758D6',
+    primary: '#EA3A3A',
+    secondary: '#4758D6',
     error: '#EA3A3A',
     success: '#75B363',
     warning: '#E1811F',
   },
 } as const;
+
+// Bold condensed display face for titles/headlines — loaded via
+// @expo-google-fonts/anton in the root layout. Use only for hero/title
+// text, never body copy or labels (that's what makes it feel intentional
+// rather than default-bold-everywhere).
+export const DisplayFont = 'Anton_400Regular';
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 

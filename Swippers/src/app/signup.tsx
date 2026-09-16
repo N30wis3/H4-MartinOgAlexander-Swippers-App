@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { DisplayFont, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { registerUser } from '@/lib/auth';
 
@@ -66,8 +66,8 @@ export default function SignUpScreen() {
       <SafeAreaView style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.form}>
-            <ThemedText type="title" style={styles.title}>
-              Create account
+            <ThemedText type="title" style={[styles.title, { fontFamily: DisplayFont }]}>
+              CREATE ACCOUNT
             </ThemedText>
 
             <View style={styles.row}>
@@ -174,7 +174,7 @@ export default function SignUpScreen() {
               onPress={handleSubmit}
               disabled={isSubmitting}>
               <ThemedText style={styles.buttonText}>
-                {isSubmitting ? 'Creating account…' : 'Create account'}
+                {isSubmitting ? 'CREATING ACCOUNT…' : 'CREATE ACCOUNT'}
               </ThemedText>
             </Pressable>
 
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.two,
+    borderRadius: Spacing.one,
     alignItems: 'center',
     marginTop: Spacing.two,
   },
@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
   loginLink: {
     alignItems: 'center',

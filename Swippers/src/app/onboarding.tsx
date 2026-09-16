@@ -5,7 +5,7 @@ import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, TextInput,
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { DisplayFont, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { replaceUserKampsports, upsertUserConfig } from '@/lib/auth';
 import { fetchLookups, Lookups } from '@/lib/lookups';
@@ -237,8 +237,8 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={styles.flex}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <ThemedText type="title" style={styles.title}>
-          Complete your profile
+        <ThemedText type="title" style={[styles.title, { fontFamily: DisplayFont }]}>
+          COMPLETE YOUR PROFILE
         </ThemedText>
 
         <Section label="Your gender">
@@ -374,7 +374,7 @@ export default function OnboardingScreen() {
           ]}
           onPress={handleSubmit}
           disabled={isSubmitting}>
-          <ThemedText style={styles.buttonText}>{isSubmitting ? 'Saving…' : 'Finish'}</ThemedText>
+          <ThemedText style={styles.buttonText}>{isSubmitting ? 'SAVING…' : 'FINISH'}</ThemedText>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    borderRadius: 999,
+    borderRadius: Spacing.one,
   },
   chipTextSelected: {
     color: '#FFFFFF',
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#3A3A3C',
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.two,
+    borderRadius: Spacing.one,
     alignItems: 'center',
   },
   submitButton: {
@@ -485,5 +485,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });
