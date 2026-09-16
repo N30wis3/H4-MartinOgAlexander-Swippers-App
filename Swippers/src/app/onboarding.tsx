@@ -5,7 +5,7 @@ import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, TextInput,
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { DisplayFont, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { replaceUserKampsports, upsertUserConfig } from '@/lib/auth';
 import { fetchLookups, Lookups } from '@/lib/lookups';
@@ -181,7 +181,7 @@ export default function OnboardingScreen() {
       });
       await replaceUserKampsports(user.id, Array.from(kampsportIds));
 
-      router.replace('/(tabs)');
+      router.replace('/mainPage');
     } catch (err: any) {
       setError(err?.message ?? 'Something went wrong. Please try again.');
     } finally {
@@ -192,7 +192,7 @@ export default function OnboardingScreen() {
   if (loadError) {
     return (
       <SafeAreaView style={styles.center}>
-        <ThemedText style={styles.error}>{loadError}</ThemedText>
+        <ThemedText style={[styles.error, { color: theme.error }]}>{loadError}</ThemedText>
       </SafeAreaView>
     );
   }
@@ -224,7 +224,7 @@ export default function OnboardingScreen() {
               onPress={() => onSelect(opt.id)}
               style={[
                 styles.chip,
-                { backgroundColor: isSelected ? '#007AFF' : theme.backgroundElement },
+                { backgroundColor: isSelected ? theme.primary : theme.backgroundElement },
               ]}>
               <ThemedText style={isSelected ? styles.chipTextSelected : undefined}>{opt.label}</ThemedText>
             </Pressable>
@@ -237,8 +237,8 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={styles.flex}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <ThemedText type="title" style={styles.title}>
-          Complete your profile
+        <ThemedText type="title" style={[styles.title, { fontFamily: DisplayFont }]}>
+          COMPLETE YOUR PROFILE
         </ThemedText>
 
         <Section label="Your gender">
@@ -291,7 +291,9 @@ export default function OnboardingScreen() {
               {gallery.map((item) => (
                 <View key={item.id} style={styles.galleryItem}>
                   <Image source={{ uri: getPictureUrl(item.storage_path) }} style={styles.galleryThumb} />
-                  <Pressable style={styles.removeBadge} onPress={() => handleRemoveGalleryPicture(item)}>
+                  <Pressable
+                    style={[styles.removeBadge, { backgroundColor: theme.error }]}
+                    onPress={() => handleRemoveGalleryPicture(item)}>
                     <ThemedText style={styles.removeBadgeText}>✕</ThemedText>
                   </Pressable>
                 </View>
@@ -328,7 +330,7 @@ export default function OnboardingScreen() {
                   onPress={() => toggleKampsport(opt.id)}
                   style={[
                     styles.chip,
-                    { backgroundColor: isSelected ? '#007AFF' : theme.backgroundElement },
+                    { backgroundColor: isSelected ? theme.primary : theme.backgroundElement },
                   ]}>
                   <ThemedText style={isSelected ? styles.chipTextSelected : undefined}>{opt.label}</ThemedText>
                 </Pressable>
@@ -361,13 +363,18 @@ export default function OnboardingScreen() {
           </View>
         </Section>
 
-        {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
+        {error ? <ThemedText style={[styles.error, { color: theme.error }]}>{error}</ThemedText> : null}
 
         <Pressable
-          style={({ pressed }) => [styles.button, styles.submitButton, (pressed || isSubmitting) && styles.buttonPressed]}
+          style={({ pressed }) => [
+            styles.button,
+            styles.submitButton,
+            { backgroundColor: theme.primary },
+            (pressed || isSubmitting) && styles.buttonPressed,
+          ]}
           onPress={handleSubmit}
           disabled={isSubmitting}>
-          <ThemedText style={styles.buttonText}>{isSubmitting ? 'Saving…' : 'Finish'}</ThemedText>
+          <ThemedText style={styles.buttonText}>{isSubmitting ? 'SAVING…' : 'FINISH'}</ThemedText>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -409,7 +416,7 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    borderRadius: 999,
+    borderRadius: Spacing.one,
   },
   chipTextSelected: {
     color: '#FFFFFF',
@@ -436,7 +443,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#FF3B30',
     borderRadius: 999,
     width: 22,
     height: 22,
@@ -462,16 +468,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   error: {
-    color: '#FF3B30',
+    // color applied inline via theme.error
   },
   button: {
     backgroundColor: '#3A3A3C',
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.two,
+    borderRadius: Spacing.one,
     alignItems: 'center',
   },
   submitButton: {
-    backgroundColor: '#007AFF',
     marginTop: Spacing.two,
   },
   buttonPressed: {
@@ -480,5 +485,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });

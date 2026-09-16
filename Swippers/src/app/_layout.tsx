@@ -1,3 +1,4 @@
+import { Anton_400Regular, useFonts } from '@expo-google-fonts/anton';
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [isReady, setIsReady] = useState(false);
+  const [fontsLoaded] = useFonts({ Anton_400Regular });
 
   useEffect(() => {
     async function checkSessionAndRoute() {
@@ -22,17 +24,14 @@ export default function RootLayout() {
         router.replace('/loginChoice');
       } else {
         const complete = await isProfileComplete(session.user.id);
-        router.replace(complete ? '/(tabs)' : '/onboarding');
+        router.replace(complete ? '/loginChoice' : '/onboarding');
       }
 
       setIsReady(true);
-      await SplashScreen.hideAsync();
     }
 
     checkSessionAndRoute();
 
-    // Keep routing correct if the session changes later (e.g. logout
-    // from a settings screen, or token refresh failing).
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         router.replace('/loginChoice');
@@ -42,8 +41,13 @@ export default function RootLayout() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  if (!isReady) {
-    // Splash screen is still visible at this point — nothing to render yet.
+  useEffect(() => {
+    if (isReady && fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [isReady, fontsLoaded]);
+
+  if (!isReady || !fontsLoaded) {
     return null;
   }
 
@@ -51,7 +55,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="loginChoice" />
         <Stack.Screen name="login" />
         <Stack.Screen name="signup" />
