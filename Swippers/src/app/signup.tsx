@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { DisplayFont, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { registerUser } from '@/lib/auth';
 
@@ -47,11 +47,8 @@ export default function SignUpScreen() {
         fornavn: fornavn.trim(),
         efternavn: efternavn.trim(),
       });
-      // No user_config row exists yet, so send them into onboarding
-      // rather than the main app.
       router.replace('/onboarding');
     } catch (err: any) {
-      // Postgres unique_violation on users.username surfaces here
       if (err?.code === '23505') {
         setError('That username is already taken.');
       } else {
@@ -69,8 +66,8 @@ export default function SignUpScreen() {
       <SafeAreaView style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.form}>
-            <ThemedText type="title" style={styles.title}>
-              Create account
+            <ThemedText type="title" style={[styles.title, { fontFamily: DisplayFont }]}>
+              CREATE ACCOUNT
             </ThemedText>
 
             <View style={styles.row}>
@@ -166,14 +163,18 @@ export default function SignUpScreen() {
               />
             </View>
 
-            {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
+            {error ? <ThemedText style={[styles.error, { color: theme.error }]}>{error}</ThemedText> : null}
 
             <Pressable
-              style={({ pressed }) => [styles.button, (pressed || isSubmitting) && styles.buttonPressed]}
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: theme.primary },
+                (pressed || isSubmitting) && styles.buttonPressed,
+              ]}
               onPress={handleSubmit}
               disabled={isSubmitting}>
               <ThemedText style={styles.buttonText}>
-                {isSubmitting ? 'Creating account…' : 'Create account'}
+                {isSubmitting ? 'CREATING ACCOUNT…' : 'CREATE ACCOUNT'}
               </ThemedText>
             </Pressable>
 
@@ -221,12 +222,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   error: {
-    color: '#FF3B30',
+    // color applied inline via theme.error
   },
   button: {
-    backgroundColor: '#007AFF',
     paddingVertical: Spacing.three,
-    borderRadius: Spacing.two,
+    borderRadius: Spacing.one,
     alignItems: 'center',
     marginTop: Spacing.two,
   },
@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    letterSpacing: 1,
   },
   loginLink: {
     alignItems: 'center',
