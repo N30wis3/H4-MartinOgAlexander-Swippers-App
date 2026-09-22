@@ -137,3 +137,4 @@ const styles = StyleSheet.create({
   footer: { marginTop: Spacing.xxl, gap: Spacing.sm },
   count: { textAlign: 'center' },
 });
+
